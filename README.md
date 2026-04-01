@@ -1,4 +1,4 @@
-# 🎬 GrubedX
+# 🎬 GrubX
 
 A modern full-stack web app for discovering and watching movies and TV shows. Built with a focus on performance, clean UI, and a personalized user experience.
 
