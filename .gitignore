@@ -1,8 +1,6 @@
 .aider*
-node_modules/
-dist/
+/node_modules
+/dist
 .env
 .env.local
 .env.*.local
-/64x64.png
-/512x512.png
