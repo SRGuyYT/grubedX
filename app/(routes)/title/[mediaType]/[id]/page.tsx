@@ -91,7 +91,8 @@ export default async function TitlePage({
                   {media.runtime ? (
                     <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-2">
                       <Clock3 className="size-4" />
-                      {media.runtime} min
+                      {Math.floor(media.runtime / 60) > 0 ? `${Math.floor(media.runtime / 60)}h ` : ""}
+                      {media.runtime % 60 > 0 ? `${media.runtime % 60}m` : ""}
                     </span>
                   ) : null}
                   {media.totalSeasons ? (

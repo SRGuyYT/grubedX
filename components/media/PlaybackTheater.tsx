@@ -73,6 +73,7 @@ export function PlaybackTheater({
   useEffect(() => {
     if (!open) {
       hasLoadedProgressRef.current = false;
+      // Reset episodes/seasons selection logic here if needed, or allow it to be preserved
       return;
     }
 

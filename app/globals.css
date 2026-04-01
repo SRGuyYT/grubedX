@@ -17,9 +17,10 @@
 
 html[data-theme="cinematic-dark"] {
   background:
-    radial-gradient(circle at top left, rgba(255, 90, 42, 0.18), transparent 35%),
-    radial-gradient(circle at 80% 0%, rgba(108, 242, 200, 0.12), transparent 25%),
-    linear-gradient(180deg, #05070b 0%, #0b111c 45%, #05070b 100%);
+    radial-gradient(circle at top left, rgba(139, 0, 0, 0.56) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,0) 0%, #000000 50%, #000000 100%);
+  background-color: #000000;
+  min-height: 100vh;
 }
 
 html,

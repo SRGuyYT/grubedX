@@ -55,38 +55,32 @@ export function TitleActions({ media }: { media: MediaDetails }) {
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="relative z-20 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
         <button
           type="button"
           onClick={() => setPlayerOpen(true)}
-          className="rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110"
+          className="flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110"
         >
-          <span className="inline-flex items-center gap-2">
-            <Play className="size-4 fill-current" />
-            {hasProgress ? "Resume" : "Play now"}
-          </span>
+          <Play className="size-4 fill-current shrink-0" />
+          <span>{hasProgress ? "Resume" : "Play now"}</span>
         </button>
 
         <button
           type="button"
           onClick={() => void toggleWatchlist()}
-          className="liquid-glass-soft rounded-full px-6 py-3 text-sm font-semibold text-white"
+          className="liquid-glass-soft flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white"
         >
-          <span className="inline-flex items-center gap-2">
-            {isSaved ? <BookmarkCheck className="size-4" /> : <Bookmark className="size-4" />}
-            {isSaved ? "Saved" : "Save to watchlist"}
-          </span>
+          {isSaved ? <BookmarkCheck className="size-4 shrink-0" /> : <Bookmark className="size-4 shrink-0" />}
+          <span>{isSaved ? "Saved" : "Save to watchlist"}</span>
         </button>
 
         <button
           type="button"
           onClick={() => setTrailerOpen(true)}
-          className="rounded-full border border-white/10 px-6 py-3 text-sm text-[var(--muted)] transition hover:text-white"
+          className="flex items-center justify-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm text-[var(--muted)] transition hover:text-white"
         >
-          <span className="inline-flex items-center gap-2">
-            <Ticket className="size-4" />
-            Trailer
-          </span>
+          <Ticket className="size-4 shrink-0" />
+          <span>Trailer</span>
         </button>
       </div>
 
