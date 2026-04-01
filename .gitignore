@@ -4,6 +4,5 @@
 /out
 /dist
 tsconfig.tsbuildinfo
-.env
 .env.local
 .env.*.local
