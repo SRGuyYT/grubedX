@@ -17,7 +17,7 @@ export const env = {
   firebaseAppId: requireEnv(process.env.NEXT_PUBLIC_FIREBASE_APP_ID, "NEXT_PUBLIC_FIREBASE_APP_ID"),
   firebaseMeasurementId: requireEnv(process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID, "NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID"),
   useFirebaseAuthEmulator: process.env.NEXT_PUBLIC_USE_FIREBASE_AUTH_EMULATOR === "true",
-  firebaseAuthEmulatorUrl: process.env.NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_URL || "http://127.0.0.1:9099",
+  firebaseAuthEmulatorUrl: process.env.NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_URL || "http://127.0.0.1:9000",
   matrixBridgeEnabled: process.env.NEXT_PUBLIC_MATRIX_BRIDGE_ENABLED === "true",
 };
 
