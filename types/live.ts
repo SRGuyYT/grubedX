@@ -38,3 +38,16 @@ export type LiveStream = {
 };
 
 export type LiveMatchScope = "live" | "all-today";
+
+export type RankedLiveMetric = {
+  source: string;
+  id: string;
+  latencyMs: number | null;
+  streamCount: number;
+  hdCount: number;
+};
+
+export type RankedLiveSelection = {
+  bestSource: LiveSource | null;
+  metrics: RankedLiveMetric[];
+};

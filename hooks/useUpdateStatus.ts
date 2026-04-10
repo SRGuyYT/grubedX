@@ -41,6 +41,7 @@ export const useUpdateStatus = (enabled = true) =>
 
       try {
         const response = await fetch("/api/update", {
+          credentials: "same-origin",
           method: "GET",
           cache: "no-store",
         });

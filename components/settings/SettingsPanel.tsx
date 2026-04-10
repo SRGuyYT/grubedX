@@ -313,7 +313,7 @@ export function SettingsPanel() {
             <ToggleSwitch checked={settings.showPlaybackTips} onChange={(checked) => setSetting("showPlaybackTips", checked, "Playback tips updated.")} disabled={isPending} />
           </SettingCard>
           <SettingCard title="Block popups" description="Embedded streams stay sandboxed and cannot open popups or new windows.">
-            <ToggleSwitch checked={settings.blockPopups} onChange={(checked) => setSetting("blockPopups", checked, "Popup blocking updated.")} disabled={isPending} />
+            <ToggleSwitch checked={true} onChange={() => undefined} disabled />
           </SettingCard>
         </div>
 

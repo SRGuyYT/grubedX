@@ -68,7 +68,7 @@ export default async function TitlePage({
         <div className="absolute inset-0 bg-gradient-to-r from-[#060912] via-[#060912f2] to-[#06091238]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#060912] via-[#06091299] to-[#06091280]" />
 
-        <div className="page-shell relative z-10 py-12 md:py-14">
+        <div className="page-shell relative z-10 py-8 md:py-12 xl:py-14">
           <div className="liquid-glass rounded-[2.2rem] px-6 py-8 md:px-8 md:py-9">
             <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
               <div className="max-w-3xl flex-1">
@@ -127,7 +127,7 @@ export default async function TitlePage({
         </div>
       </section>
 
-      <section className="page-shell grid gap-8 py-12 md:py-14 lg:grid-cols-[1.2fr,0.8fr]">
+      <section className="page-shell grid gap-6 py-8 md:gap-8 md:py-12 xl:py-14 lg:grid-cols-[1.2fr,0.8fr]">
         <div className="liquid-glass rounded-[2.1rem] px-6 py-6 md:px-7 md:py-7">
           <h2 className="text-2xl font-semibold">Cast</h2>
           <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">

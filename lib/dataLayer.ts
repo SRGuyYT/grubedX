@@ -6,6 +6,7 @@ import {
   SEARCH_STORAGE_KEY,
   SETTINGS_STORAGE_KEY,
   UPDATER_STORAGE_KEY,
+  LIVE_HISTORY_STORAGE_KEY,
   WATCHLIST_STORAGE_KEY,
   removeLocalValue,
   readLocalJson,
@@ -16,6 +17,7 @@ import {
 import type {
   DataLayer,
   PlaybackProgress,
+  RecentLiveItem,
   SearchPreferences,
   UpdaterState,
   WatchlistItem,
@@ -32,6 +34,8 @@ const DEFAULT_UPDATER_STATE: UpdaterState = {
   dismissedVersion: null,
   lastError: null,
 };
+
+const MAX_RECENT_LIVE_ITEMS = 12;
 
 const normalizeWatchlist = (items: WatchlistItem[]) =>
   items
@@ -58,6 +62,7 @@ const getContinueWatching = () =>
 
 const getWatchlist = () => readLocalJson<WatchlistItem[]>(WATCHLIST_STORAGE_KEY, []);
 const getProgressMap = () => readLocalJson<Record<string, PlaybackProgress>>(PROGRESS_STORAGE_KEY, {});
+const getRecentLive = () => readLocalJson<RecentLiveItem[]>(LIVE_HISTORY_STORAGE_KEY, []);
 
 export const dataLayer: DataLayer = {
   async loadSettings() {
@@ -175,5 +180,28 @@ export const dataLayer: DataLayer = {
     };
     writeLocalJson(UPDATER_STORAGE_KEY, merged);
     return merged;
+  },
+
+  async loadRecentLive() {
+    return getRecentLive().sort((left, right) => right.watchedAt.localeCompare(left.watchedAt));
+  },
+
+  async saveRecentLive(item) {
+    const nextItems = [
+      item,
+      ...getRecentLive().filter(
+        (entry) =>
+          !(
+            entry.matchId === item.matchId &&
+            entry.source === item.source &&
+            entry.streamNo === item.streamNo
+          ),
+      ),
+    ]
+      .sort((left, right) => right.watchedAt.localeCompare(left.watchedAt))
+      .slice(0, MAX_RECENT_LIVE_ITEMS);
+
+    writeLocalJson(LIVE_HISTORY_STORAGE_KEY, nextItems);
+    return nextItems;
   },
 };

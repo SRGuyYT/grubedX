@@ -15,10 +15,10 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="space-y-12 pb-14">
+    <div className="space-y-10 pb-14 md:space-y-12">
       <HeroCarousel items={hero.results.slice(0, 5)} />
 
-      <div className="page-shell space-y-12">
+      <div className="page-shell space-y-10 md:space-y-12">
         <ContinueWatchingRow />
         <WatchlistRow />
         <MediaRow

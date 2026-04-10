@@ -9,7 +9,9 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { LoadingState } from "@/components/feedback/LoadingState";
 import { useSettingsContext } from "@/context/SettingsContext";
 import { cn } from "@/lib/cn";
+import { dataLayer } from "@/lib/dataLayer";
 import {
+  getClientBestLiveSource,
   formatLiveStart,
   getClientLiveMatches,
   getClientLiveSports,
@@ -62,9 +64,28 @@ export default function LiveTVPage() {
       return;
     }
 
-    setActiveSource(activeMatch.sources[0] ?? null);
+    setActiveSource(null);
     setSelectedStreamNo(null);
   }, [activeMatch]);
+
+  const bestSourceQuery = useQuery({
+    queryKey: ["live", "best-source", activeMatch?.id],
+    queryFn: ({ signal }) =>
+      activeMatch ? getClientBestLiveSource(activeMatch.sources, signal) : Promise.resolve({ bestSource: null, metrics: [] }),
+    enabled: Boolean(activeMatch && activeMatch.sources.length > 0),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  useEffect(() => {
+    if (!activeMatch || activeSource) {
+      return;
+    }
+
+    const candidate = bestSourceQuery.data?.bestSource ?? activeMatch.sources[0] ?? null;
+    if (candidate) {
+      setActiveSource(candidate);
+    }
+  }, [activeMatch, activeSource, bestSourceQuery.data?.bestSource]);
 
   const streamsQuery = useQuery({
     queryKey: ["live", "streams", activeSource?.source, activeSource?.id],
@@ -105,6 +126,22 @@ export default function LiveTVPage() {
   const activeStream =
     (streamsQuery.data ?? []).find((stream) => stream.streamNo === selectedStreamNo) ?? streamsQuery.data?.[0] ?? null;
 
+  useEffect(() => {
+    if (!activeMatch || !activeStream) {
+      return;
+    }
+
+    void dataLayer.saveRecentLive({
+      matchId: activeMatch.id,
+      title: activeMatch.title,
+      category: activeMatch.category,
+      posterUrl: resolveLivePosterUrl(activeMatch),
+      source: activeStream.source,
+      streamNo: activeStream.streamNo,
+      watchedAt: new Date().toISOString(),
+    });
+  }, [activeMatch, activeStream]);
+
   const closeOverlay = () => {
     setActiveMatch(null);
     setActiveSource(null);
@@ -112,7 +149,7 @@ export default function LiveTVPage() {
   };
 
   return (
-    <div className="pb-14">
+    <div className="pb-14 md:pb-16">
       <section className="relative overflow-hidden border-b border-white/8">
         <div className="absolute inset-0 bg-gradient-to-r from-[#060912] via-[#060912f2] to-[#06091238]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#060912] via-[#06091299] to-[#06091280]" />
@@ -144,9 +181,9 @@ export default function LiveTVPage() {
         </div>
       </section>
 
-      <section className="page-shell space-y-7 py-12 md:py-14">
+      <section className="page-shell space-y-6 py-8 md:space-y-7 md:py-12 xl:py-14">
         <div className="liquid-glass rounded-[2.1rem] px-5 py-5 md:px-6 md:py-6">
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2.5 md:gap-3">
             {scopeOptions.map((option) => (
               <button
                 key={option.id}
@@ -180,7 +217,7 @@ export default function LiveTVPage() {
           </p>
         </div>
 
-        <div className="flex gap-3 overflow-x-auto pb-3 pt-1 scrollbar-hidden">
+        <div className="flex gap-2.5 overflow-x-auto pb-3 pt-1 scrollbar-hidden md:gap-3">
           <button
             type="button"
             onClick={() => setSelectedSport("all")}
@@ -223,13 +260,13 @@ export default function LiveTVPage() {
             description="Try a different sport or switch between live and today."
           />
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3 xl:gap-7">
+          <div className="grid gap-4 sm:grid-cols-2 md:gap-5 xl:grid-cols-3 xl:gap-6">
             {filteredMatches.map((match) => {
               const homeBadge = resolveLiveBadgeUrl(match.teams?.home?.badge);
               const awayBadge = resolveLiveBadgeUrl(match.teams?.away?.badge);
 
               return (
-                <article key={match.id} className="liquid-glass-soft overflow-hidden rounded-[1.85rem] border border-white/8 p-3">
+                <article key={match.id} className="liquid-glass-soft overflow-hidden rounded-[1.7rem] border border-white/8 p-3 md:rounded-[1.85rem]">
                   <button
                     type="button"
                     onClick={() => setActiveMatch(match)}
@@ -253,7 +290,7 @@ export default function LiveTVPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-4 px-2 pb-2 pt-5">
+                    <div className="space-y-4 px-1 pb-1 pt-4 md:px-2 md:pb-2 md:pt-5">
                       {match.teams?.home || match.teams?.away ? (
                         <div className="flex items-center justify-between gap-3">
                           <div className="flex min-w-0 items-center gap-3">
@@ -291,14 +328,14 @@ export default function LiveTVPage() {
       </section>
 
       {activeMatch ? (
-        <div className="fixed inset-0 z-40 flex items-start justify-center bg-black/88 px-4 pb-4 pt-24 backdrop-blur-md md:pt-28">
+        <div className="fixed inset-0 z-40 flex items-start justify-center bg-black/88 px-3 pb-3 pt-[calc(4.9rem+env(safe-area-inset-top))] backdrop-blur-md md:px-4 md:pb-4 md:pt-28">
           <button type="button" className="absolute inset-0" onClick={closeOverlay} aria-label="Close live stream overlay" />
 
-          <div className="liquid-glass relative z-[41] flex h-[min(calc(100vh-7rem),960px)] w-full max-w-7xl flex-col overflow-hidden rounded-[2.2rem] p-4 md:h-[min(calc(100vh-8rem),960px)]">
-            <div className="flex items-center justify-between gap-4 border-b border-white/10 bg-black/35 px-5 py-4">
+          <div className="liquid-glass relative z-[41] flex h-[min(calc(100vh-6rem),960px)] w-full max-w-7xl flex-col overflow-hidden rounded-[1.85rem] p-3 md:h-[min(calc(100vh-8rem),960px)] md:rounded-[2.2rem] md:p-4">
+            <div className="flex items-start justify-between gap-3 border-b border-white/10 bg-black/35 px-4 py-4 md:items-center md:gap-4 md:px-5">
               <div>
                 <p className="text-xs uppercase tracking-[0.28em] text-[var(--muted)]">Live Stream</p>
-                <h2 className="text-2xl font-semibold text-white">{activeMatch.title}</h2>
+                <h2 className="text-xl font-semibold text-white md:text-2xl">{activeMatch.title}</h2>
                 <p className="mt-1 text-sm text-[var(--muted)]">{formatLiveStart(activeMatch.date)}</p>
               </div>
               <button
@@ -310,12 +347,12 @@ export default function LiveTVPage() {
               </button>
             </div>
 
-            <div className="flex flex-1 flex-col gap-4 overflow-hidden px-4 py-4 lg:grid lg:grid-cols-[1fr,320px]">
-              <div className="relative min-h-[320px] overflow-hidden rounded-[1.6rem] border border-white/10 bg-black">
-                {streamsQuery.isPending ? (
+            <div className="flex flex-1 flex-col gap-4 overflow-hidden px-3 py-3 md:px-4 md:py-4 lg:grid lg:grid-cols-[1fr,320px]">
+              <div className="relative min-h-[280px] overflow-hidden rounded-[1.45rem] border border-white/10 bg-black md:min-h-[320px] md:rounded-[1.6rem]">
+                {bestSourceQuery.isPending || (activeSource && streamsQuery.isPending) ? (
                   <div className="absolute inset-0 flex items-center justify-center text-[var(--muted)]">
                     <LoaderCircle className="mr-3 size-5 animate-spin" />
-                    Loading stream options...
+                    Finding the healthiest stream source...
                   </div>
                 ) : activeStream?.embedUrl ? (
                   <iframe
@@ -323,6 +360,7 @@ export default function LiveTVPage() {
                     title={`${activeMatch.title} stream`}
                     className="absolute inset-0 h-full w-full border-0"
                     allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                    referrerPolicy="origin-when-cross-origin"
                     sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
                     allowFullScreen
                   />
@@ -333,9 +371,14 @@ export default function LiveTVPage() {
                 )}
               </div>
 
-              <div className="liquid-glass-soft flex flex-col gap-5 overflow-y-auto rounded-[1.6rem] border border-white/8 p-4">
+              <div className="liquid-glass-soft flex flex-col gap-5 overflow-y-auto rounded-[1.45rem] border border-white/8 p-4 md:rounded-[1.6rem]">
                 <div>
                   <p className="text-xs uppercase tracking-[0.28em] text-[var(--muted)]">Sources</p>
+                  {bestSourceQuery.data?.bestSource ? (
+                    <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
+                      Auto-selected {bestSourceQuery.data.bestSource.source} based on response speed and available stream quality.
+                    </p>
+                  ) : null}
                   <div className="mt-3 flex flex-wrap gap-2">
                     {activeMatch.sources.map((source) => (
                       <button
@@ -394,6 +437,23 @@ export default function LiveTVPage() {
                   Match cards open the player only after you click them. Embedded streams stay inside this overlay and do
                   not auto-open elsewhere.
                 </div>
+
+                {bestSourceQuery.data?.metrics?.length ? (
+                  <div className="rounded-[1.2rem] border border-white/8 bg-black/25 px-4 py-4 text-sm text-[var(--muted)]">
+                    <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">Source health</p>
+                    <div className="mt-3 space-y-2">
+                      {bestSourceQuery.data.metrics.map((metric) => (
+                        <div key={`${metric.source}-${metric.id}`} className="flex items-center justify-between gap-3">
+                          <span className="font-medium text-white/90">{metric.source}</span>
+                          <span>
+                            {metric.streamCount} stream{metric.streamCount === 1 ? "" : "s"} · {metric.hdCount} HD ·{" "}
+                            {metric.latencyMs ? `${metric.latencyMs}ms` : "unreachable"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>

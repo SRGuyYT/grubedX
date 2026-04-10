@@ -1,7 +1,6 @@
 "use client";
 
 import type { Genre, MediaDetails, MediaPage, MediaType } from "@/types/media";
-import { env } from "@/lib/env";
 import {
   normalizeEpisodes,
   normalizeGenreList,
@@ -11,14 +10,14 @@ import {
 } from "@/lib/tmdb/normalizers";
 
 const buildUrl = (path: string, params: Record<string, string | number | undefined>) => {
-  const url = new URL(`${env.tmdbProxyBase.replace(/\/$/, "")}${path}`);
-  url.searchParams.set("api_key", env.tmdbApiKey);
+  const url = new URLSearchParams();
+  url.set("path", path);
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== "") {
-      url.searchParams.set(key, String(value));
+      url.set(key, String(value));
     }
   });
-  return url.toString();
+  return `/api/tmdb?${url.toString()}`;
 };
 
 const tmdbClientFetch = async <T>(
@@ -26,7 +25,10 @@ const tmdbClientFetch = async <T>(
   params: Record<string, string | number | undefined> = {},
   signal?: AbortSignal,
 ) => {
-  const response = await fetch(buildUrl(path, params), { signal });
+  const response = await fetch(buildUrl(path, params), {
+    credentials: "same-origin",
+    signal,
+  });
   if (!response.ok) {
     throw new Error(`TMDB request failed: ${response.status} ${path}`);
   }

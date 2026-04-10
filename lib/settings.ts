@@ -5,6 +5,7 @@ export const WATCHLIST_STORAGE_KEY = "grubx_watchlist";
 export const PROGRESS_STORAGE_KEY = "grubx_progress";
 export const SEARCH_STORAGE_KEY = "grubx_search";
 export const UPDATER_STORAGE_KEY = "grubx_updater";
+export const LIVE_HISTORY_STORAGE_KEY = "grubx_recent_live";
 export const STORAGE_EVENT_NAME = "grubx:storage";
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -57,7 +58,7 @@ export const sanitizeSettings = (input?: Partial<Settings> | null): Settings => 
   autoplayNextEpisode: readBoolean(input?.autoplayNextEpisode, DEFAULT_SETTINGS.autoplayNextEpisode),
   inlineTrailerMuted: readBoolean(input?.inlineTrailerMuted, DEFAULT_SETTINGS.inlineTrailerMuted),
   showPlaybackTips: readBoolean(input?.showPlaybackTips, DEFAULT_SETTINGS.showPlaybackTips),
-  blockPopups: readBoolean(input?.blockPopups, DEFAULT_SETTINGS.blockPopups),
+  blockPopups: true,
   enableAnimations: readBoolean(input?.enableAnimations, DEFAULT_SETTINGS.enableAnimations),
   amoledMode: readBoolean(input?.amoledMode, DEFAULT_SETTINGS.amoledMode),
   accentGlow: readBoolean(input?.accentGlow, DEFAULT_SETTINGS.accentGlow),

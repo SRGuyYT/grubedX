@@ -44,7 +44,7 @@ export function ContinueWatchingRow({
         {items.map((item) => (
           <article
             key={item.mediaId}
-            className="liquid-glass-soft min-w-[290px] max-w-[320px] shrink-0 overflow-hidden rounded-[2rem] border border-white/8 sm:min-w-[340px]"
+            className="liquid-glass-soft min-w-[260px] max-w-[320px] shrink-0 overflow-hidden rounded-[2rem] border border-white/8 sm:min-w-[320px] md:min-w-[340px]"
           >
             <div className="relative aspect-[16/10] overflow-hidden">
               <Image
@@ -57,14 +57,14 @@ export function ContinueWatchingRow({
                 }
                 alt={item.title}
                 fill
-                sizes="(max-width: 640px) 290px, 340px"
+                sizes="(max-width: 640px) 260px, (max-width: 768px) 320px, 340px"
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#060912] via-[#06091280] to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-5">
                 <p className="text-xs uppercase tracking-[0.28em] text-[var(--accent)]">
                   {item.mediaType === "tv" && item.season && item.episode
-                    ? `S${item.season} · E${item.episode}`
+                    ? ["S", item.season, " · E", item.episode].join("")
                     : "Resume ready"}
                 </p>
                 <h3 className="mt-2 line-clamp-2 text-2xl font-semibold text-white">{item.title}</h3>
@@ -73,7 +73,7 @@ export function ContinueWatchingRow({
 
             <div className="space-y-4 px-5 py-5">
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm text-[var(--muted)]">
+                <div className="flex items-center justify-between gap-3 text-sm text-[var(--muted)]">
                   <span>{item.progress}% complete</span>
                   <span>{Math.max(0, Math.round(item.duration - item.currentTime))}s left</span>
                 </div>

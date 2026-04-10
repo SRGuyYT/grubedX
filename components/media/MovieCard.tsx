@@ -28,7 +28,7 @@ export function MovieCard({
         prefetch={settings.prefetchRoutes && !settings.lowBandwidthMode}
         className={cn(
           "liquid-glass-soft relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/8",
-          compact ? "p-3" : "p-4",
+          compact ? "p-3" : "p-3.5 sm:p-4",
         )}
       >
         <div className="relative block aspect-[2/3] w-full overflow-hidden rounded-[1.45rem] border border-white/8">
@@ -57,7 +57,7 @@ export function MovieCard({
           </div>
         </div>
 
-        <div className={cn("flex flex-1 flex-col px-1 pb-1", compact ? "gap-3 pt-4" : "gap-4 pt-5")}>
+        <div className={cn("flex flex-1 flex-col px-1 pb-1", compact ? "gap-3 pt-4" : "gap-4 pt-4.5 sm:pt-5")}>
           <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
             {settings.showRatings && media.rating ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-black/20 px-3 py-1.5">

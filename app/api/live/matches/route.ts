@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { buildEdgeCacheHeaders } from "@/lib/http/cache";
+
 const LIVE_MATCHES_ENDPOINT = "https://streamed.pk/api/matches/live";
 const TODAY_MATCHES_ENDPOINT = "https://streamed.pk/api/matches/all-today";
 
@@ -10,13 +12,15 @@ export async function GET(request: Request) {
   const scope = searchParams.get("scope") === "all-today" ? "all-today" : "live";
   const popular = searchParams.get("popular") === "true";
   const endpoint = `${scope === "all-today" ? TODAY_MATCHES_ENDPOINT : LIVE_MATCHES_ENDPOINT}${popular ? "/popular" : ""}`;
+  const ttlSeconds = scope === "live" ? 30 : 120;
 
   try {
     const response = await fetch(endpoint, {
-      cache: "no-store",
       headers: {
         Accept: "application/json",
       },
+      next: { revalidate: ttlSeconds },
+      redirect: "error",
     });
 
     if (!response.ok) {
@@ -24,7 +28,9 @@ export async function GET(request: Request) {
     }
 
     const payload = await response.json();
-    return NextResponse.json(payload);
+    return NextResponse.json(payload, {
+      headers: buildEdgeCacheHeaders(ttlSeconds, scope === "live" ? 90 : 600),
+    });
   } catch {
     return NextResponse.json({ error: "Unable to reach live matches provider" }, { status: 502 });
   }

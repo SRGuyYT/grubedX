@@ -1,10 +1,18 @@
-import type { LiveMatch, LiveMatchScope, LiveSource, LiveSport, LiveStream } from "@/types/live";
+import type {
+  LiveMatch,
+  LiveMatchScope,
+  LiveSource,
+  LiveSport,
+  LiveStream,
+  RankedLiveSelection,
+} from "@/types/live";
 
 const STREAMED_BASE = "https://streamed.pk";
 
 const fetchJson = async <T>(input: string, signal?: AbortSignal): Promise<T> => {
   const response = await fetch(input, {
     cache: "no-store",
+    credentials: "same-origin",
     signal,
   });
 
@@ -42,6 +50,24 @@ export const getClientLiveStreams = (source: LiveSource, signal?: AbortSignal) =
   });
 
   return fetchJson<LiveStream[]>(`/api/live/streams?${params.toString()}`, signal);
+};
+
+export const getClientBestLiveSource = async (sources: LiveSource[], signal?: AbortSignal) => {
+  const response = await fetch("/api/live/best", {
+    body: JSON.stringify({ sources }),
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error("Unable to rank live sources.");
+  }
+
+  return (await response.json()) as RankedLiveSelection;
 };
 
 export const resolveLivePosterUrl = (match: LiveMatch) => {

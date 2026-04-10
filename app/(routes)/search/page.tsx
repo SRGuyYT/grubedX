@@ -118,7 +118,7 @@ export default function SearchPage() {
   const results = useMemo(() => searchQuery.data ?? [], [searchQuery.data]);
 
   return (
-    <section className="page-shell space-y-8 py-6 md:py-10">
+    <section className="page-shell space-y-6 py-6 md:space-y-8 md:py-10">
       <div className="liquid-glass rounded-[2.3rem] px-6 py-8 md:px-8 md:py-10">
         <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">Search</p>
         <h1 className="mt-3 text-4xl font-semibold md:text-5xl">Search all titles fast</h1>
@@ -170,7 +170,7 @@ export default function SearchPage() {
           description="Type at least two characters. Search All is the default and merges movies with TV results."
         />
       ) : searchQuery.isPending ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-7">
+        <div className="grid gap-[var(--card-gap)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, index) => (
             <div key={index} className="liquid-glass-soft h-[420px] animate-pulse rounded-[2rem]" />
           ))}
@@ -178,7 +178,7 @@ export default function SearchPage() {
       ) : results.length === 0 ? (
         <EmptyState title="No results found" description="Try a broader query or switch between All, Movies, and TV." />
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-7">
+        <div className="grid gap-[var(--card-gap)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {results.map((item) => (
             <MovieCard key={`${item.mediaType}-${item.id}`} media={item} />
           ))}

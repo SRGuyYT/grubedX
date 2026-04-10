@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import packageJson from "../../../package.json";
+import { buildEdgeCacheHeaders } from "@/lib/http/cache";
 
 const REPO_URL = "https://github.com/SRGuyYT/GrubX";
 const TAGS_URL = "https://api.github.com/repos/SRGuyYT/GrubX/tags?per_page=20";
@@ -74,15 +75,20 @@ export async function GET() {
       ? `${REPO_URL}/compare/v${currentVersion}...v${latestVersion}`
       : `${REPO_URL}/tree/main`;
 
-    return NextResponse.json({
-      currentVersion,
-      latestVersion,
-      hasUpdate,
-      checkedAt: new Date().toISOString(),
-      repoUrl: REPO_URL,
-      compareUrl,
-      error: null,
-    });
+    return NextResponse.json(
+      {
+        currentVersion,
+        latestVersion,
+        hasUpdate,
+        checkedAt: new Date().toISOString(),
+        repoUrl: REPO_URL,
+        compareUrl,
+        error: null,
+      },
+      {
+        headers: buildEdgeCacheHeaders(60 * 60, 60 * 60 * 24),
+      },
+    );
   } catch (error) {
     return NextResponse.json(
       {
@@ -94,7 +100,10 @@ export async function GET() {
         compareUrl: `${REPO_URL}/tree/main`,
         error: error instanceof Error ? error.message : "Update check failed.",
       },
-      { status: 200 },
+      {
+        headers: buildEdgeCacheHeaders(60 * 15, 60 * 60),
+        status: 200,
+      },
     );
   }
 }

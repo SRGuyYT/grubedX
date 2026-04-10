@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, Maximize2, Minimize2, X } from "lucide-react";
 
 import { cn } from "@/lib/cn";
-import { env } from "@/lib/env";
 import { dataLayer } from "@/lib/dataLayer";
 import { getClientMediaDetails, getClientSeasonEpisodes } from "@/lib/tmdb/client";
 import { useSettingsContext } from "@/context/SettingsContext";
@@ -57,6 +56,51 @@ export function PlaybackTheater({
     queryFn: () => dataLayer.getPlaybackProgress(mediaId),
     enabled: open && ready && settings.resumePlayback,
     staleTime: 1000 * 30,
+  });
+
+  const playerSourceQuery = useQuery({
+    queryKey: [
+      "player",
+      "resolved-source",
+      mediaType,
+      mediaId,
+      selectedSeason,
+      selectedEpisode,
+      settings.autoplayNextEpisode,
+      progressQuery.data?.currentTime ?? null,
+    ],
+    queryFn: async ({ signal }) => {
+      const params = new URLSearchParams({
+        mediaType,
+        mediaId,
+        season: String(selectedSeason),
+        episode: String(selectedEpisode),
+        autoplayNextEpisode: settings.autoplayNextEpisode ? "true" : "false",
+      });
+
+      if (
+        settings.resumePlayback &&
+        progressQuery.data &&
+        progressQuery.data.currentTime > 0 &&
+        (mediaType === "movie" ||
+          (progressQuery.data.season === selectedSeason && progressQuery.data.episode === selectedEpisode))
+      ) {
+        params.set("progress", String(Math.floor(progressQuery.data.currentTime)));
+      }
+
+      const response = await fetch(`/api/player/resolve?${params.toString()}`, {
+        credentials: "same-origin",
+        signal,
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to resolve player source.");
+      }
+
+      return (await response.json()) as { url: string; latencyMs: number | null; candidateCount: number };
+    },
+    enabled: open,
+    staleTime: 1000 * 60,
   });
 
   useEffect(() => {
@@ -164,23 +208,8 @@ export function PlaybackTheater({
     return null;
   }
 
-  let sourceUrl =
-    mediaType === "movie"
-      ? `${env.vidkingBase}/movie/${mediaId}?color=ff5a2a&autoPlay=true`
-      : `${env.vidkingBase}/tv/${mediaId}/${selectedSeason}/${selectedEpisode}?color=ff5a2a&autoPlay=true&episodeSelector=true${settings.autoplayNextEpisode ? "&nextEpisode=true" : ""}`;
-
-  if (
-    settings.resumePlayback &&
-    progressQuery.data &&
-    progressQuery.data.currentTime > 0 &&
-    (mediaType === "movie" ||
-      (progressQuery.data.season === selectedSeason && progressQuery.data.episode === selectedEpisode))
-  ) {
-    sourceUrl += `&progress=${Math.floor(progressQuery.data.currentTime)}`;
-  }
-
   return (
-    <div className="fixed inset-0 z-[85] flex items-start justify-center bg-black/88 px-3 pb-3 pt-20 backdrop-blur-md md:px-4 md:pt-8">
+    <div className="fixed inset-0 z-[85] flex items-start justify-center bg-black/88 px-3 pb-3 pt-[calc(4.9rem+env(safe-area-inset-top))] backdrop-blur-md md:px-4 md:pt-8">
       {!isTheaterMode ? (
         <button type="button" aria-label="Close player overlay" className="absolute inset-0" onClick={onClose} />
       ) : null}
@@ -250,28 +279,42 @@ export function PlaybackTheater({
           </div>
 
           <div className="relative flex-1 bg-black">
-            <iframe
-              src={sourceUrl}
-              title={`${title} player`}
-              className="absolute inset-0 h-full w-full border-0"
-              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-              sandbox={
-                settings.blockPopups
-                  ? "allow-scripts allow-same-origin allow-forms allow-presentation"
-                  : "allow-scripts allow-same-origin allow-forms allow-presentation allow-popups allow-popups-to-escape-sandbox"
-              }
-              allowFullScreen
-            />
+            {playerSourceQuery.isPending ? (
+              <div className="absolute inset-0 flex items-center justify-center px-8 text-center text-[var(--muted)]">
+                Resolving the healthiest playback server...
+              </div>
+            ) : playerSourceQuery.isError ? (
+              <div className="absolute inset-0 flex items-center justify-center px-8 text-center text-red-100">
+                Unable to resolve a stable playback server right now.
+              </div>
+            ) : (
+              <iframe
+                src={playerSourceQuery.data?.url}
+                title={`${title} player`}
+                className="absolute inset-0 h-full w-full border-0"
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                referrerPolicy="origin-when-cross-origin"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+                allowFullScreen
+              />
+            )}
           </div>
 
           {settings.showPlaybackTips ? (
             <div className="absolute bottom-4 left-4 z-10 rounded-2xl border border-white/10 bg-black/60 px-4 py-3 text-xs text-[var(--muted)]">
-              Press Esc to close. Playback progress saves locally every few seconds.
+              Press Esc to close. Popups stay blocked. Playback progress saves locally every few seconds.
+            </div>
+          ) : null}
+
+          {playerSourceQuery.data?.latencyMs ? (
+            <div className="absolute bottom-4 right-4 z-10 rounded-2xl border border-white/10 bg-black/60 px-4 py-3 text-xs text-[var(--muted)]">
+              Server picked in {playerSourceQuery.data.latencyMs}ms from {playerSourceQuery.data.candidateCount} candidate
+              {playerSourceQuery.data.candidateCount === 1 ? "" : "s"}.
             </div>
           ) : null}
 
           {detailsQuery.isError ? (
-            <div className="absolute bottom-4 right-4 z-10 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+            <div className="absolute right-4 top-4 z-10 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
               <span className="inline-flex items-center gap-2">
                 <AlertTriangle className="size-4" />
                 TV metadata could not be loaded. Playback is still available.

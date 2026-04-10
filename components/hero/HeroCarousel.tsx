@@ -73,7 +73,7 @@ export function HeroCarousel({ items }: { items: MediaItem[] }) {
         <div className="absolute inset-0 bg-gradient-to-r from-[#05070f] via-[#05070fe6] to-[#05070f66]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#05070f] via-[#05070f88] to-[#05070fbf]" />
 
-        <div className="page-shell relative flex min-h-[62vh] items-center py-8 md:min-h-[70vh] md:py-12">
+        <div className="page-shell relative flex min-h-[56vh] items-center py-6 md:min-h-[66vh] md:py-10 xl:min-h-[70vh] xl:py-12">
           <div className="liquid-glass relative z-10 max-w-3xl rounded-[2.2rem] px-7 py-8 md:px-9 md:py-10">
             <p className="mb-4 text-xs uppercase tracking-[0.45em] text-[var(--muted)]">Trending Today</p>
             <h1 className="max-w-2xl text-4xl font-semibold leading-none sm:text-5xl md:text-6xl">

@@ -50,6 +50,16 @@ export type UpdaterState = {
   lastError: string | null;
 };
 
+export type RecentLiveItem = {
+  matchId: string;
+  title: string;
+  category: string;
+  posterUrl: string;
+  source: string;
+  streamNo: number;
+  watchedAt: string;
+};
+
 export interface DataLayer {
   loadSettings(): Promise<Settings>;
   saveSettings(settings: Partial<Settings>): Promise<Settings>;
@@ -74,4 +84,6 @@ export interface DataLayer {
   saveSearchPreferences(next: Partial<SearchPreferences>): Promise<SearchPreferences>;
   loadUpdaterState(): Promise<UpdaterState>;
   saveUpdaterState(next: Partial<UpdaterState>): Promise<UpdaterState>;
+  loadRecentLive(): Promise<RecentLiveItem[]>;
+  saveRecentLive(item: RecentLiveItem): Promise<RecentLiveItem[]>;
 }
