@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, AlertTriangle, Eye, EyeOff, Flag, Maximize2, MessageSquare, Pause, Play, RefreshCw, Server, ShieldAlert, VolumeX, X } from "lucide-react";
 import { toast } from "sonner";
@@ -369,6 +369,29 @@ export function PlaybackTheater({
     [candidates],
   );
 
+  useLayoutEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    document.body.classList.add("grubx-player-open");
+    document.documentElement.classList.add("grubx-player-open");
+    window.dispatchEvent(new CustomEvent("grubx:player-chrome-change", { detail: { open: true } }));
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.body.classList.remove("grubx-player-open");
+      document.documentElement.classList.remove("grubx-player-open");
+      window.dispatchEvent(new CustomEvent("grubx:player-chrome-change", { detail: { open: false } }));
+    };
+  }, [open]);
+
   useEffect(() => {
     if (!open) {
       setIsTheaterMode(settings.theaterModeDefault);
@@ -575,14 +598,10 @@ export function PlaybackTheater({
       });
     };
 
-    document.body.style.overflow = "hidden";
-    document.body.classList.add("grubx-player-open");
     window.addEventListener("keydown", onEscape);
     window.addEventListener("message", onMessage);
 
     return () => {
-      document.body.style.overflow = "auto";
-      document.body.classList.remove("grubx-player-open");
       window.removeEventListener("keydown", onEscape);
       window.removeEventListener("message", onMessage);
     };
@@ -738,7 +757,7 @@ export function PlaybackTheater({
 
   return (
     <div
-      className="fixed inset-0 z-[200] bg-black text-white"
+      className="fixed inset-0 z-[1000] bg-black text-white"
       onMouseMove={() => setControlsVisible(true)}
       onTouchStart={(event) => {
         if (serverSheetOpen || reportOpen || feedbackOpen) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -82,6 +82,34 @@ function BrandBlock() {
 export function Navbar() {
   const pathname = usePathname();
   const nav = useMemo(() => navItems, []);
+  const [playerChromeHidden, setPlayerChromeHidden] = useState(false);
+
+  useEffect(() => {
+    const isPlayerRoute = pathname.startsWith("/player") || pathname.startsWith("/embed");
+    const syncPlayerChromeState = () => {
+      setPlayerChromeHidden(
+        isPlayerRoute ||
+          document.body.classList.contains("grubx-player-open") ||
+          document.documentElement.classList.contains("grubx-player-open"),
+      );
+    };
+
+    syncPlayerChromeState();
+
+    const observer = new MutationObserver(syncPlayerChromeState);
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    window.addEventListener("grubx:player-chrome-change", syncPlayerChromeState);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("grubx:player-chrome-change", syncPlayerChromeState);
+    };
+  }, [pathname]);
+
+  if (playerChromeHidden) {
+    return null;
+  }
 
   return (
     <>

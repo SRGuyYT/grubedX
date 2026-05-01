@@ -144,8 +144,14 @@ a {
   display: none !important;
 }
 
+html.grubx-player-open .site-navbar,
 body.grubx-player-open .site-navbar {
   display: none !important;
+}
+
+html.grubx-player-open,
+body.grubx-player-open {
+  overflow: hidden;
 }
 
 .player-modal-pop {
