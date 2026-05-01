@@ -1,0 +1,23 @@
+.liquid-glass {
+  backdrop-filter: blur(var(--app-blur, 16px)) saturate(130%);
+  -webkit-backdrop-filter: blur(var(--app-blur, 16px)) saturate(130%);
+  background:
+    linear-gradient(180deg, rgba(27, 26, 24, 0.78) 0%, rgba(7, 7, 7, 0.72) 100%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent 36%, rgba(255, 255, 255, 0.025));
+  border: 1px solid rgba(255, 255, 255, 0.105);
+  box-shadow:
+    0 22px 70px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.liquid-glass-soft {
+  backdrop-filter: blur(calc(var(--app-blur, 16px) * 0.72)) saturate(125%);
+  -webkit-backdrop-filter: blur(calc(var(--app-blur, 16px) * 0.72)) saturate(125%);
+  background:
+    linear-gradient(180deg, rgba(28, 27, 25, 0.68) 0%, rgba(10, 10, 10, 0.58) 100%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045), transparent 48%);
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  box-shadow:
+    0 14px 42px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}

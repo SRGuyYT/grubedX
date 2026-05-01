@@ -1,0 +1,8 @@
+.aider*
+/node_modules
+/.next
+/out
+/dist
+tsconfig.tsbuildinfo
+.env.local
+.env.*.local
