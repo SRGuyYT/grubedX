@@ -13,6 +13,7 @@ import { proxiedServerUrlAny } from "@/lib/externalProxy";
 
 const SPOTIFY_ACCOUNTS_URL = "https://accounts.spotify.com";
 const SPOTIFY_API_URL = "https://api.spotify.com";
+const GRUBX_FRONTEND_URL = "https://grub.sky0cloud.dpdns.org";
 const TOKEN_REFRESH_SKEW_MS = 60_000;
 
 export const SPOTIFY_COOKIE_NAMES = {
@@ -117,20 +118,50 @@ export class SpotifyApiError extends Error {
   }
 }
 
-export function getSpotifyRedirectUri(request?: Request) {
-  if (process.env.SPOTIFY_REDIRECT_URI) {
-    return process.env.SPOTIFY_REDIRECT_URI;
+const cleanUrlOrigin = (value: string) => {
+  try {
+    const url = new URL(value);
+    return url.hostname === "0.0.0.0" ? GRUBX_FRONTEND_URL : url.origin;
+  } catch {
+    return GRUBX_FRONTEND_URL;
+  }
+};
+
+export function getFrontendUrl(request?: Request) {
+  const configuredUrl = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL;
+  if (configuredUrl) {
+    return cleanUrlOrigin(configuredUrl);
   }
 
   if (!request) {
-    return "http://127.0.0.1:3000/api/spotify/callback";
+    return GRUBX_FRONTEND_URL;
   }
 
-  const redirectUrl = new URL("/api/spotify/callback", request.url);
-  if (redirectUrl.hostname === "localhost") {
-    redirectUrl.hostname = "127.0.0.1";
+  const requestUrl = new URL(request.url);
+  if (requestUrl.hostname === "0.0.0.0") {
+    return GRUBX_FRONTEND_URL;
   }
-  return redirectUrl.toString();
+
+  return requestUrl.origin;
+}
+
+export function buildFrontendRedirect(path: string, request?: Request) {
+  return new URL(path, getFrontendUrl(request));
+}
+
+export function getSpotifyRedirectUri(request?: Request) {
+  if (process.env.SPOTIFY_REDIRECT_URI) {
+    try {
+      const redirectUrl = new URL(process.env.SPOTIFY_REDIRECT_URI);
+      return redirectUrl.hostname === "0.0.0.0"
+        ? new URL("/api/spotify/callback", GRUBX_FRONTEND_URL).toString()
+        : redirectUrl.toString();
+    } catch {
+      return new URL("/api/spotify/callback", GRUBX_FRONTEND_URL).toString();
+    }
+  }
+
+  return buildFrontendRedirect("/api/spotify/callback", request).toString();
 }
 
 export function getSpotifyConfig(request?: Request) {

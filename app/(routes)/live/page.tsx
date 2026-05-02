@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CalendarDays, LoaderCircle, Radio, ShieldAlert, Signal, Tv2, X } from "lucide-react";
 
 import { EmptyState } from "@/components/feedback/EmptyState";
+import { FeatureGate } from "@/components/feedback/FeatureGate";
 import { FilterPanel } from "@/components/filters/FilterPanel";
 import { LoadingState } from "@/components/feedback/LoadingState";
 import { MediaPlayer } from "@/components/media/MediaPlayer";
@@ -184,7 +185,8 @@ export default function LiveTVPage() {
   };
 
   return (
-    <div className="pb-14 md:pb-16">
+    <FeatureGate feature="live">
+      <div className="pb-14 md:pb-16">
       <section className="relative overflow-hidden border-b border-white/8">
         <div className="absolute inset-0 bg-gradient-to-r from-[#060912] via-[#060912f2] to-[#06091238]" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#060912] via-[#06091299] to-[#06091280]" />
@@ -506,6 +508,7 @@ export default function LiveTVPage() {
           </div>
         </div>
       ) : null}
-    </div>
+      </div>
+    </FeatureGate>
   );
 }

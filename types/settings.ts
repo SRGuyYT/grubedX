@@ -9,6 +9,31 @@ export type AudioProfile = "cinema" | "dialog" | "night";
 export type AccentTone = "ember" | "electric" | "aurora";
 export type PopupBlockerStrictness = "low" | "medium" | "high";
 export type EmbedQualityMode = "auto" | "data-saver" | "high";
+export type PlaybackMode = "direct" | "proxy" | "auto";
+export type YouTubeSafeSearch = "strict" | "moderate" | "off";
+export type SpotifyEmbedSize = "compact" | "large";
+export type NavStyle = "floating" | "top-bar" | "compact";
+export type MobileNavStyle = "bottom-bar" | "drawer";
+export type AiOpenMode = "same-tab" | "new-tab";
+
+export type FeatureToggles = {
+  movies: boolean;
+  tv: boolean;
+  live: boolean;
+  youtube: boolean;
+  spotify: boolean;
+  tiktok: boolean;
+  search: boolean;
+  watchlist: boolean;
+  continueWatching: boolean;
+  aiServer: boolean;
+  providerReports: boolean;
+  feedbackContact: boolean;
+  safetyLegalPages: boolean;
+  proxyPlayback: boolean;
+  thirdPartyPlayback: boolean;
+  tvModeScreenMirroring: boolean;
+};
 
 export type CustomProviderSettings = {
   id: string;
@@ -21,10 +46,22 @@ export type CustomProviderSettings = {
 };
 
 export type Settings = {
+  featureToggles: FeatureToggles;
   safeMode: boolean;
   popupBlockerStrictness: PopupBlockerStrictness;
   recommendationsEnabled: boolean;
   embedQualityMode: EmbedQualityMode;
+  playbackMode: PlaybackMode;
+  enableServerSwitcher: boolean;
+  showPlaybackWarnings: boolean;
+  youtubeSafeSearch: YouTubeSafeSearch;
+  youtubeResultCount: 8 | 12 | 20;
+  spotifyEmbedSize: SpotifyEmbedSize;
+  navStyle: NavStyle;
+  mobileNavStyle: MobileNavStyle;
+  aiOpenMode: AiOpenMode;
+  showBuildInfo: boolean;
+  showUpdateStatus: boolean;
   providerSettings: Record<string, boolean>;
   customProviders: CustomProviderSettings[];
   autoplayTrailers: boolean;

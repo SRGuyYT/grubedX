@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle, Search } from "lucide-react";
 
 import { EmptyState } from "@/components/feedback/EmptyState";
+import { FeatureGate } from "@/components/feedback/FeatureGate";
 import { MovieCard } from "@/components/media/MovieCard";
 import { useSettingsContext } from "@/context/SettingsContext";
 import { dataLayer } from "@/lib/dataLayer";
@@ -125,7 +126,8 @@ export default function SearchPage() {
   const results = useMemo(() => searchQuery.data ?? [], [searchQuery.data]);
 
   return (
-    <section className="page-shell space-y-7 py-8 md:space-y-9 md:py-12">
+    <FeatureGate feature="search">
+      <section className="page-shell space-y-7 py-8 md:space-y-9 md:py-12">
       <div className="mx-auto max-w-4xl text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[var(--accent)]">Search</p>
         <h1 className="mt-4 text-5xl font-bold leading-none md:text-6xl">Find your next favorite story</h1>
@@ -191,6 +193,7 @@ export default function SearchPage() {
           ))}
         </div>
       )}
-    </section>
+      </section>
+    </FeatureGate>
   );
 }

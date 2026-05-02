@@ -8,6 +8,7 @@ import {
   getYouTubeConfig,
   youtubeApiFetch,
 } from "@/lib/youtube";
+import { toYouTubeEmbedUrl, toYouTubeWatchUrl } from "@/lib/youtubeEmbed";
 import type { YouTubeSearchItem } from "@/types/external";
 
 export const runtime = "nodejs";
@@ -45,8 +46,8 @@ const mapResults = (body: YouTubeSearchBody, mode: "videos" | "shorts"): YouTube
         thumbnailUrl:
           snippet.thumbnails?.high?.url ?? snippet.thumbnails?.medium?.url ?? snippet.thumbnails?.default?.url ?? null,
         publishedAt: snippet.publishedAt ?? null,
-        watchUrl: `https://www.youtube.com/watch?v=${videoId}`,
-        embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
+        watchUrl: toYouTubeWatchUrl(videoId),
+        embedUrl: toYouTubeEmbedUrl(videoId) ?? `https://www.youtube-nocookie.com/embed/${videoId}`,
       };
       return result;
     })

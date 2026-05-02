@@ -9,6 +9,7 @@ import type {
   SeasonSummary,
   TrailerResult,
 } from "@/types/media";
+import { toYouTubeEmbedUrl } from "@/lib/youtubeEmbed";
 
 type TmdbMediaRecord = Record<string, unknown>;
 
@@ -67,13 +68,15 @@ export const normalizeTrailer = (input: unknown): TrailerResult | null => {
     return null;
   }
 
+  const embedUrl = toYouTubeEmbedUrl(match.key) ?? `https://www.youtube-nocookie.com/embed/${match.key}`;
+
   return {
     id: String(match.id ?? match.key),
     key: match.key,
     name: String(match.name ?? "Official Trailer"),
     site: "YouTube",
     type: "Trailer",
-    embedUrl: `https://www.youtube.com/embed/${match.key}`,
+    embedUrl,
     thumbnailUrl: `https://img.youtube.com/vi/${match.key}/hqdefault.jpg`,
   };
 };

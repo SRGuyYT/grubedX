@@ -7,7 +7,11 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { LoadingState } from "@/components/feedback/LoadingState";
 import { useSettingsContext } from "@/context/SettingsContext";
 import { useTrailer } from "@/hooks/useTrailer";
+import { toYouTubeWatchUrl } from "@/lib/youtubeEmbed";
 import type { MediaType } from "@/types/media";
+
+const youtubeIframeAllow =
+  "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
 
 export function TrailerModal({
   open,
@@ -68,7 +72,7 @@ export function TrailerModal({
           <div className="flex items-center gap-2">
             {trailer ? (
               <a
-                href={`https://www.youtube.com/watch?v=${trailer.key}`}
+                href={toYouTubeWatchUrl(trailer.key)}
                 target="_blank"
                 rel="noreferrer"
                 className="rounded-full border border-white/10 px-4 py-2 text-sm text-[var(--muted)] transition hover:text-white"
@@ -100,8 +104,9 @@ export function TrailerModal({
                 src={embedUrl}
                 title={`${title} trailer`}
                 className="h-full w-full border-0"
-                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                allow={youtubeIframeAllow}
                 allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
               />
             </div>
           </div>

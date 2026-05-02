@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ExternalEmbedFrame } from "@/components/media/ExternalEmbedFrame";
 import { ScreenMirrorButton } from "@/components/media/ScreenMirrorButton";
 import { cn } from "@/lib/cn";
+import { toYouTubeEmbedUrl, toYouTubeWatchUrl } from "@/lib/youtubeEmbed";
 import type { YouTubeSearchItem, YouTubeSessionResponse } from "@/types/external";
 
 type YouTubeMode = "videos" | "shorts";
@@ -16,11 +17,8 @@ const modeOptions: Array<{ value: YouTubeMode; label: string }> = [
   { value: "shorts", label: "Shorts" },
 ];
 
-const youtubeEmbedBase = (process.env.NEXT_PUBLIC_YOUTUBE_PROXY_BASE || "https://www.youtube-nocookie.com").replace(/\/+$/, "");
-const youtubeWebBase = (process.env.NEXT_PUBLIC_YOUTUBE_WEB_PROXY_BASE || "https://www.youtube.com").replace(/\/+$/, "");
-
-const embedUrlFor = (id: string) => `${youtubeEmbedBase}/embed/${encodeURIComponent(id)}`;
-const watchUrlFor = (id: string) => `${youtubeWebBase}/watch?v=${encodeURIComponent(id)}`;
+const youtubeIframeAllow =
+  "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
 
 function SetupPanel({ redirectUri }: { redirectUri?: string }) {
   return (
@@ -33,7 +31,7 @@ function SetupPanel({ redirectUri }: { redirectUri?: string }) {
         <code>YOUTUBE_API_KEY=</code>
         <code>YOUTUBE_CLIENT_ID=</code>
         <code>YOUTUBE_CLIENT_SECRET=</code>
-        <code>YOUTUBE_REDIRECT_URI={redirectUri ?? "http://127.0.0.1:3000/api/youtube/callback"}</code>
+        <code>YOUTUBE_REDIRECT_URI={redirectUri ?? "https://grub.sky0cloud.dpdns.org/api/youtube/callback"}</code>
       </div>
     </div>
   );
@@ -47,9 +45,11 @@ export function YouTubeConsole() {
   const [session, setSession] = useState<YouTubeSessionResponse | null>(null);
   const [sessionLoading, setSessionLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [embedFailed, setEmbedFailed] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const selectedEmbedUrl = useMemo(() => (selected ? embedUrlFor(selected.id) : ""), [selected]);
+  const selectedEmbedUrl = useMemo(() => (selected ? toYouTubeEmbedUrl(selected.embedUrl ?? selected.id) : null), [selected]);
+  const selectedWatchUrl = useMemo(() => (selected ? toYouTubeWatchUrl(selected.id) : "https://www.youtube.com/"), [selected]);
 
   const loadSession = useCallback(async () => {
     setSessionLoading(true);
@@ -93,6 +93,7 @@ export function YouTubeConsole() {
       const nextResults = body?.results ?? [];
       setResults(nextResults);
       setSelected(nextResults[0] ?? null);
+      setEmbedFailed(false);
       if (nextResults.length === 0) {
         setMessage(mode === "shorts" ? "No Shorts found." : "No videos found.");
       }
@@ -193,7 +194,10 @@ export function YouTubeConsole() {
                 <button
                   key={item.id}
                   type="button"
-                  onClick={() => setSelected(item)}
+                  onClick={() => {
+                    setSelected(item);
+                    setEmbedFailed(false);
+                  }}
                   className={cn(
                     "group overflow-hidden rounded-[1rem] border bg-white/[0.035] text-left transition active:scale-[0.99]",
                     selected?.id === item.id ? "border-[var(--accent)]" : "border-white/10 hover:border-white/22",
@@ -221,8 +225,33 @@ export function YouTubeConsole() {
 
         <aside className="space-y-3">
           <div className="aspect-video overflow-hidden rounded-[1rem] border border-white/10 bg-black">
-            {selected ? (
-              <ExternalEmbedFrame src={selectedEmbedUrl} title={selected.title} className="h-full w-full border-0" />
+            {selected && selectedEmbedUrl ? (
+              <div className="relative h-full w-full">
+                <ExternalEmbedFrame
+                  key={selected.id}
+                  src={selectedEmbedUrl}
+                  title={selected.title}
+                  className="h-full w-full border-0"
+                  allow={youtubeIframeAllow}
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  onError={() => setEmbedFailed(true)}
+                />
+                {embedFailed ? (
+                  <div className="absolute inset-0 grid place-items-center bg-black/82 px-6 text-center backdrop-blur-sm">
+                    <div>
+                      <p className="text-sm font-semibold text-white">This YouTube embed could not load here.</p>
+                      <a
+                        href={selectedWatchUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 text-sm font-bold text-black"
+                      >
+                        Watch on YouTube
+                      </a>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
             ) : (
               <div className="grid h-full place-items-center px-6 text-center text-sm text-[var(--muted)]">
                 Select a result to play.
@@ -233,13 +262,13 @@ export function YouTubeConsole() {
             <ScreenMirrorButton label="Cast / Mirror" />
             {selected ? (
               <a
-                href={watchUrlFor(selected.id)}
+                href={selectedWatchUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/8 px-4 text-sm font-semibold text-white"
               >
                 <ExternalLink className="size-4" />
-                Open on YouTube
+                Watch on YouTube
               </a>
             ) : null}
           </div>

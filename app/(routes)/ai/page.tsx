@@ -1,12 +1,14 @@
 import { Bot, ExternalLink } from "lucide-react";
 
+import { FeatureGate } from "@/components/feedback/FeatureGate";
 import { ExternalEmbedFrame } from "@/components/media/ExternalEmbedFrame";
 
 const aiServerUrl = process.env.NEXT_PUBLIC_AI_SERVER_URL || "https://xthat.sky0cloud.dpdns.org";
 
 export default function AiServerPage() {
   return (
-    <section className="page-shell space-y-6">
+    <FeatureGate feature="aiServer">
+      <section className="page-shell space-y-6">
       <div className="liquid-glass rounded-[2rem] border border-white/10 p-6 md:p-8">
         <div className="flex items-center gap-3">
           <Bot className="size-5 text-[var(--accent)]" />
@@ -34,6 +36,7 @@ export default function AiServerPage() {
       <div className="liquid-glass-soft overflow-hidden rounded-[1.4rem] border border-white/10 bg-black">
         <ExternalEmbedFrame src={aiServerUrl} title="GrubX AI Server" className="h-[72dvh] min-h-[560px] w-full border-0" />
       </div>
-    </section>
+      </section>
+    </FeatureGate>
   );
 }

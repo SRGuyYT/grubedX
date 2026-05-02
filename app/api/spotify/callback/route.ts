@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import {
   applySpotifyTokenCookies,
+  buildFrontendRedirect,
   clearSpotifyCookies,
   exchangeSpotifyCode,
   SPOTIFY_COOKIE_NAMES,
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
   const state = url.searchParams.get("state");
   const error = url.searchParams.get("error");
   const expectedState = request.cookies.get(SPOTIFY_COOKIE_NAMES.state)?.value;
-  const redirectUrl = new URL("/spotify", request.url);
+  const redirectUrl = buildFrontendRedirect("/spotify", request);
 
   if (error) {
     redirectUrl.searchParams.set("spotify", "denied");

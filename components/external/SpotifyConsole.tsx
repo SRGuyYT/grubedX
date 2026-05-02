@@ -69,7 +69,7 @@ function SetupPanel({ redirectUri }: { redirectUri?: string }) {
       <div className="mt-4 grid gap-2 rounded-[0.9rem] border border-white/10 bg-black/34 p-4 text-xs text-white/82">
         <code>SPOTIFY_CLIENT_ID=</code>
         <code>SPOTIFY_CLIENT_SECRET=</code>
-        <code>SPOTIFY_REDIRECT_URI={redirectUri ?? "http://localhost:3000/api/spotify/callback"}</code>
+        <code>SPOTIFY_REDIRECT_URI={redirectUri ?? "https://grub.sky0cloud.dpdns.org/api/spotify/callback"}</code>
       </div>
     </div>
   );

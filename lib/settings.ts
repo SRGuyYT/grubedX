@@ -13,11 +13,42 @@ const defaultProviderSettings = Object.fromEntries(
   appConfig.providers.map((provider) => [provider.id, provider.enabled]),
 );
 
+export const DEFAULT_FEATURE_TOGGLES: Settings["featureToggles"] = {
+  movies: true,
+  tv: true,
+  live: true,
+  youtube: true,
+  spotify: true,
+  tiktok: true,
+  search: true,
+  watchlist: true,
+  continueWatching: true,
+  aiServer: true,
+  providerReports: true,
+  feedbackContact: true,
+  safetyLegalPages: true,
+  proxyPlayback: false,
+  thirdPartyPlayback: true,
+  tvModeScreenMirroring: true,
+};
+
 export const DEFAULT_SETTINGS: Settings = {
+  featureToggles: DEFAULT_FEATURE_TOGGLES,
   safeMode: appConfig.SAFE_MODE,
   popupBlockerStrictness: "medium",
   recommendationsEnabled: appConfig.featureFlags.recommendations,
   embedQualityMode: "auto",
+  playbackMode: "auto",
+  enableServerSwitcher: true,
+  showPlaybackWarnings: true,
+  youtubeSafeSearch: "moderate",
+  youtubeResultCount: 12,
+  spotifyEmbedSize: "large",
+  navStyle: "floating",
+  mobileNavStyle: "bottom-bar",
+  aiOpenMode: "new-tab",
+  showBuildInfo: true,
+  showUpdateStatus: false,
   providerSettings: defaultProviderSettings,
   customProviders: [],
   autoplayTrailers: false,
@@ -68,6 +99,19 @@ const readBoolean = (value: unknown, fallback: boolean) =>
 
 const readEnum = <T extends string>(value: unknown, options: readonly T[], fallback: T): T =>
   typeof value === "string" && options.includes(value as T) ? (value as T) : fallback;
+
+const readNumberEnum = <T extends number>(value: unknown, options: readonly T[], fallback: T): T =>
+  typeof value === "number" && options.includes(value as T) ? (value as T) : fallback;
+
+const readFeatureToggles = (value: unknown) => {
+  const input = typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
+  return Object.fromEntries(
+    Object.entries(DEFAULT_FEATURE_TOGGLES).map(([key, fallback]) => [
+      key,
+      readBoolean(input[key], fallback),
+    ]),
+  ) as Settings["featureToggles"];
+};
 
 const readProvider = (value: unknown, fallback: Settings["defaultProvider"]) =>
   typeof value === "string" && getGrubXProvider(value) && isProviderAllowed(value)
@@ -132,6 +176,7 @@ const sanitizeCustomProviders = (value: unknown): CustomProviderSettings[] => {
 };
 
 export const sanitizeSettings = (input?: Partial<Settings> | null): Settings => ({
+  featureToggles: readFeatureToggles(input?.featureToggles),
   safeMode: readBoolean(input?.safeMode, DEFAULT_SETTINGS.safeMode),
   popupBlockerStrictness: readEnum(
     input?.popupBlockerStrictness,
@@ -140,6 +185,17 @@ export const sanitizeSettings = (input?: Partial<Settings> | null): Settings => 
   ),
   recommendationsEnabled: readBoolean(input?.recommendationsEnabled, DEFAULT_SETTINGS.recommendationsEnabled),
   embedQualityMode: readEnum(input?.embedQualityMode, ["auto", "data-saver", "high"], DEFAULT_SETTINGS.embedQualityMode),
+  playbackMode: readEnum(input?.playbackMode, ["direct", "proxy", "auto"], DEFAULT_SETTINGS.playbackMode),
+  enableServerSwitcher: readBoolean(input?.enableServerSwitcher, DEFAULT_SETTINGS.enableServerSwitcher),
+  showPlaybackWarnings: readBoolean(input?.showPlaybackWarnings, DEFAULT_SETTINGS.showPlaybackWarnings),
+  youtubeSafeSearch: readEnum(input?.youtubeSafeSearch, ["strict", "moderate", "off"], DEFAULT_SETTINGS.youtubeSafeSearch),
+  youtubeResultCount: readNumberEnum(input?.youtubeResultCount, [8, 12, 20], DEFAULT_SETTINGS.youtubeResultCount),
+  spotifyEmbedSize: readEnum(input?.spotifyEmbedSize, ["compact", "large"], DEFAULT_SETTINGS.spotifyEmbedSize),
+  navStyle: readEnum(input?.navStyle, ["floating", "top-bar", "compact"], DEFAULT_SETTINGS.navStyle),
+  mobileNavStyle: readEnum(input?.mobileNavStyle, ["bottom-bar", "drawer"], DEFAULT_SETTINGS.mobileNavStyle),
+  aiOpenMode: readEnum(input?.aiOpenMode, ["same-tab", "new-tab"], DEFAULT_SETTINGS.aiOpenMode),
+  showBuildInfo: readBoolean(input?.showBuildInfo, DEFAULT_SETTINGS.showBuildInfo),
+  showUpdateStatus: readBoolean(input?.showUpdateStatus, DEFAULT_SETTINGS.showUpdateStatus),
   providerSettings: readProviderSettings(input?.providerSettings),
   customProviders: sanitizeCustomProviders(input?.customProviders),
   autoplayTrailers: readBoolean(input?.autoplayTrailers, DEFAULT_SETTINGS.autoplayTrailers),
