@@ -17,6 +17,7 @@ const REQUIRED_ROUTE_LABELS: Record<string, string> = {
   "/youtube": "YouTube",
   "/spotify": "Spotify",
   "/tiktok": "TikTok",
+  "/ai": "AI Server",
   "/search": "Search",
   "/settings": "Settings",
 };

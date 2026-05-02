@@ -8,6 +8,7 @@ import {
   spotifyApiFetch,
   SpotifyApiError,
 } from "@/lib/spotify";
+import { proxiedServerUrlAny } from "@/lib/externalProxy";
 
 export const runtime = "nodejs";
 
@@ -75,7 +76,10 @@ export async function POST(request: NextRequest) {
       id: playlist.id,
       name: playlist.name,
       uri: playlist.uri,
-      externalUrl: playlist.external_urls?.spotify ?? "https://open.spotify.com/",
+      externalUrl: proxiedServerUrlAny(
+        ["SPOTIFY_WEB_PROXY_BASE", "NEXT_PUBLIC_SPOTIFY_PROXY_BASE", "SPOTIFY_PROXY_BASE"],
+        playlist.external_urls?.spotify ?? "https://open.spotify.com/",
+      ),
       tracksAdded: uris.length,
     });
 

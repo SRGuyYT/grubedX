@@ -16,11 +16,15 @@ export const appConfig = {
     "www.youtube-nocookie.com",
     "audiomack.com",
     "www.audiomack.com",
+    "tiktok.com",
+    "www.tiktok.com",
+    "xthat.sky0cloud.dpdns.org",
   ],
   featureFlags: {
     recommendations: true,
     externalMedia: true,
     liveSports: true,
     customProviders: true,
+    aiServer: true,
   },
 } as const;

@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner";
 
 import { ExternalEmbedFrame } from "@/components/media/ExternalEmbedFrame";
+import { ScreenMirrorButton } from "@/components/media/ScreenMirrorButton";
 import { useSpotifyWebPlayer } from "@/hooks/useSpotifyWebPlayer";
 import { cn } from "@/lib/cn";
 import type {
@@ -345,13 +346,17 @@ export function SpotifyConsole() {
           ) : (
             <a
               href="/api/spotify/login"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-bold text-black transition active:scale-[0.98]"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-bold !text-black transition active:scale-[0.98]"
             >
               <LogIn className="size-4" />
               Log in with Spotify
             </a>
           )}
         </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <ScreenMirrorButton label="Cast / Mirror" />
       </div>
 
       {session?.configured === false ? <SetupPanel redirectUri={session.setup?.redirectUri} /> : null}

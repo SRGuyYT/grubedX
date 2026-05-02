@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/cn";
 import { AgeGateModal } from "@/components/legal/AgeGateModal";
 import { RiskConsentModal } from "@/components/legal/RiskConsentModal";
+import { ScreenMirrorButton } from "@/components/media/ScreenMirrorButton";
 import { dataLayer } from "@/lib/dataLayer";
 import {
   acceptRiskConsent,
@@ -959,6 +960,11 @@ export function PlaybackTheater({
               >
                 <Maximize2 className="size-5" />
               </button>
+              <ScreenMirrorButton
+                target={iframeRef.current}
+                label="Mirror"
+                className="hidden shrink-0 px-4 text-[var(--muted)] md:inline-flex"
+              />
               <button
                 type="button"
                 onClick={() => setControlsVisible(false)}
@@ -1083,7 +1089,7 @@ export function PlaybackTheater({
                 src={activeCandidate.embedUrl}
                 title={`${title} player`}
                 className={cn("absolute inset-0 h-full w-full border-0", settings.blockPopups && !controlsUnlocked ? "pointer-events-none" : "")}
-                allow="fullscreen; picture-in-picture; encrypted-media"
+                allow="fullscreen; picture-in-picture; encrypted-media; autoplay; clipboard-write; web-share; presentation"
                 referrerPolicy="no-referrer"
                 allowFullScreen
                 onLoad={() => {

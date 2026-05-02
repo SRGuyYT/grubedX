@@ -18,7 +18,7 @@ export function ExternalEmbedFrame({
       src={src}
       title={title}
       className={className ?? "h-full w-full"}
-      allow="fullscreen; picture-in-picture; encrypted-media"
+      allow="fullscreen; picture-in-picture; encrypted-media; autoplay; clipboard-write; web-share; presentation"
       allowFullScreen
       referrerPolicy="no-referrer"
       onLoad={onLoad}

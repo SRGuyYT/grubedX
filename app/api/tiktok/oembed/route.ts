@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { proxiedServerUrlAny } from "@/lib/externalProxy";
+
 export const runtime = "nodejs";
 
 const TIKTOK_OEMBED_ENDPOINT = "https://www.tiktok.com/oembed";
@@ -19,7 +21,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Paste a valid TikTok URL." }, { status: 400 });
   }
 
-  const apiUrl = new URL(TIKTOK_OEMBED_ENDPOINT);
+  const apiUrl = new URL(proxiedServerUrlAny(["TIKTOK_API_PROXY_BASE", "TIKTOK_PROXY_BASE"], TIKTOK_OEMBED_ENDPOINT));
   apiUrl.searchParams.set("url", parsedUrl.toString());
 
   try {

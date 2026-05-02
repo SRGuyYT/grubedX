@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Bot,
   Clapperboard,
   Home,
   Music,
@@ -33,6 +34,7 @@ const navItems: NavItem[] = [
   { href: "/youtube", label: "YouTube", icon: Youtube },
   { href: "/tiktok", label: "TikTok", icon: Video },
   { href: "/spotify", label: "Spotify", icon: Music },
+  { href: "/ai", label: "AI Server", icon: Bot },
   { href: "/search", label: "Search", icon: Search },
   { href: "/settings", label: "Settings", icon: Settings2 },
 ];
@@ -126,7 +128,7 @@ export function Navbar() {
           <div className="flex items-center gap-2">
             <Link
               href="/search?focus=1"
-              className="liquid-glass-soft hidden items-center justify-between gap-3 rounded-full px-4 py-3 text-sm text-[var(--muted)] transition hover:border-white/15 hover:text-white xl:flex"
+              className="liquid-glass-soft hidden items-center justify-between gap-3 rounded-full px-4 py-3 text-sm text-[var(--muted)] transition hover:border-white/15 hover:text-white 2xl:flex"
             >
               <span className="inline-flex items-center gap-3">
                 <Search className="size-4" />
@@ -135,7 +137,7 @@ export function Navbar() {
               <kbd className="keyboard-only rounded-full border border-white/10 px-2 py-1 text-[11px]">/</kbd>
             </Link>
 
-            <div className="hidden lg:block">
+            <div className="hidden 2xl:block">
               <LiveClock />
             </div>
           </div>

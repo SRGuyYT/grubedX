@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { FilterPanel } from "@/components/filters/FilterPanel";
 import { LoadingState } from "@/components/feedback/LoadingState";
 import { MediaPlayer } from "@/components/media/MediaPlayer";
+import { ScreenMirrorButton } from "@/components/media/ScreenMirrorButton";
 import { LiveRecommendationSections } from "@/components/recommendations/LiveRecommendationSections";
 import { useSettingsContext } from "@/context/SettingsContext";
 import { filterByYear, useFilters } from "@/hooks/useFilters";
@@ -368,13 +369,16 @@ export default function LiveTVPage() {
                 <h2 className="text-xl font-semibold text-white md:text-2xl">{activeMatch.title}</h2>
                 <p className="mt-1 text-sm text-[var(--muted)]">{formatLiveStart(activeMatch.date)}</p>
               </div>
-              <button
-                type="button"
-                onClick={closeOverlay}
-                className="rounded-full border border-white/10 bg-black/45 p-3 text-[var(--muted)] transition hover:border-white/20 hover:text-white"
-              >
-                <X className="size-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <ScreenMirrorButton label="Mirror" className="hidden md:inline-flex" />
+                <button
+                  type="button"
+                  onClick={closeOverlay}
+                  className="rounded-full border border-white/10 bg-black/45 p-3 text-[var(--muted)] transition hover:border-white/20 hover:text-white"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
             </div>
 
             <div className="flex flex-1 flex-col gap-4 overflow-hidden px-3 py-3 md:px-4 md:py-4 lg:grid lg:grid-cols-[1fr,320px]">

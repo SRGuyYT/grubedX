@@ -53,7 +53,7 @@ export function FilterPanel({
       <div className="mt-5 grid gap-5">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--muted)]">{genreLabel}</p>
-          <div className="scrollbar-hidden flex gap-2 overflow-x-auto pb-1">
+          <div className="scrollbar-hidden flex gap-2 overflow-x-auto pb-1 md:flex-wrap md:overflow-visible">
             {genres.map((genre) => {
               const active = filters.genres.includes(genre.id);
               return (

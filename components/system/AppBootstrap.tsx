@@ -83,7 +83,7 @@ export function AppBootstrap() {
       return;
     }
 
-    ["/", "/movies", "/tv", "/live", "/youtube", "/spotify", "/tiktok", "/search", "/settings"].forEach((href) => router.prefetch(href));
+    ["/", "/movies", "/tv", "/live", "/youtube", "/spotify", "/tiktok", "/ai", "/search", "/settings"].forEach((href) => router.prefetch(href));
   }, [ready, router, settings.prefetchRoutes]);
 
   useEffect(() => {

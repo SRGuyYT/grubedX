@@ -9,6 +9,7 @@ import type {
   SpotifyTrackSummary,
   SpotifyUserSummary,
 } from "@/types/spotify";
+import { proxiedServerUrlAny } from "@/lib/externalProxy";
 
 const SPOTIFY_ACCOUNTS_URL = "https://accounts.spotify.com";
 const SPOTIFY_API_URL = "https://api.spotify.com";
@@ -156,7 +157,7 @@ export function buildSpotifyAuthorizeUrl(request: Request, state: string) {
     show_dialog: "true",
   });
 
-  return `${SPOTIFY_ACCOUNTS_URL}/authorize?${params.toString()}`;
+  return `${proxiedServerUrlAny(["SPOTIFY_ACCOUNTS_PROXY_BASE", "SPOTIFY_PROXY_BASE"], `${SPOTIFY_ACCOUNTS_URL}/authorize`)}?${params.toString()}`;
 }
 
 const encodeClientCredentials = (clientId: string, clientSecret: string) =>
@@ -168,7 +169,9 @@ async function requestSpotifyToken(body: URLSearchParams, request?: Request) {
     throw new SpotifyApiError(500, "Spotify is not configured.");
   }
 
-  const response = await fetch(`${SPOTIFY_ACCOUNTS_URL}/api/token`, {
+  const response = await fetch(
+    proxiedServerUrlAny(["SPOTIFY_ACCOUNTS_PROXY_BASE", "SPOTIFY_PROXY_BASE"], `${SPOTIFY_ACCOUNTS_URL}/api/token`),
+    {
     method: "POST",
     headers: {
       Authorization: `Basic ${encodeClientCredentials(config.clientId, config.clientSecret)}`,
@@ -176,7 +179,8 @@ async function requestSpotifyToken(body: URLSearchParams, request?: Request) {
     },
     body,
     cache: "no-store",
-  });
+    },
+  );
 
   const payload = (await response.json().catch(() => null)) as SpotifyTokenResponse & SpotifyApiErrorBody | null;
   if (!response.ok || !payload?.access_token) {
@@ -268,7 +272,8 @@ export async function spotifyApiFetch<T>(
   accessToken: string,
   init: RequestInit = {},
 ) {
-  const response = await fetch(path.startsWith("https://") ? path : `${SPOTIFY_API_URL}${path}`, {
+  const spotifyUrl = path.startsWith("https://") ? path : `${SPOTIFY_API_URL}${path}`;
+  const response = await fetch(proxiedServerUrlAny(["SPOTIFY_API_PROXY_BASE", "SPOTIFY_PROXY_BASE"], spotifyUrl), {
     ...init,
     headers: {
       Accept: "application/json",
@@ -296,7 +301,11 @@ export async function spotifyApiFetch<T>(
 }
 
 const imageUrl = (images?: SpotifyImage[] | null) => images?.[0]?.url ?? null;
-const externalUrl = (urls?: SpotifyExternalUrls) => urls?.spotify ?? "https://open.spotify.com/";
+const externalUrl = (urls?: SpotifyExternalUrls) =>
+  proxiedServerUrlAny(
+    ["SPOTIFY_WEB_PROXY_BASE", "NEXT_PUBLIC_SPOTIFY_PROXY_BASE", "SPOTIFY_PROXY_BASE"],
+    urls?.spotify ?? "https://open.spotify.com/",
+  );
 
 export const mapSpotifyUser = (user: SpotifyRawUser): SpotifyUserSummary => ({
   id: user.id,
