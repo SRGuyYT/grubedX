@@ -1,0 +1,11 @@
+▲ Next.js 16.2.2
+- Local:         http://localhost:9000
+- Network:       http://0.0.0.0:9000
+✓ Ready in 172ms
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /home/ssadmin/package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /home/ssadmin/GrubX/pnpm-lock.yaml
+
