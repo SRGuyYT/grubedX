@@ -53,7 +53,6 @@ const PROVIDER_REPORTS_KEY = "grubx.providerReports";
 const PROVIDER_FAILURES_KEY = "grubx.providerFailures";
 const PROVIDER_SUCCESSES_KEY = "grubx.providerSuccesses";
 const PREFERRED_PROVIDER_KEY = "grubx.preferredProvider";
-const POPUP_MONITOR_WINDOW_MS = 3500;
 
 const reportReasons: Array<{ value: GrubXProviderReportReason; label: string }> = [
   { value: "popups", label: "Popups / new tabs" },
@@ -153,7 +152,6 @@ export function PlaybackTheater({
   const [watchHistory, setWatchHistory] = useState<GrubXWatchHistoryItem[]>([]);
   const [attemptedProviders, setAttemptedProviders] = useState<Set<string>>(() => new Set());
   const [iframeFailed, setIframeFailed] = useState(false);
-  const [popupSuspected, setPopupSuspected] = useState(false);
   const [playbackConsentReady, setPlaybackConsentReady] = useState(false);
   const [showAgeGate, setShowAgeGate] = useState(false);
   const [showRiskConsent, setShowRiskConsent] = useState(false);
@@ -168,7 +166,6 @@ export function PlaybackTheater({
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const lastProgressRef = useRef(0);
   const progressLoadedRef = useRef(false);
-  const activatedAtRef = useRef<number | null>(null);
   const playerController = useMemo(() => createGrubXIframeController(() => iframeRef.current), []);
 
   const detailsQuery = useQuery({
@@ -380,7 +377,6 @@ export function PlaybackTheater({
       setWatchHistory([]);
       setAttemptedProviders(new Set());
       setIframeFailed(false);
-      setPopupSuspected(false);
       setPlaybackConsentReady(false);
       setShowAgeGate(false);
       setShowRiskConsent(false);
@@ -399,12 +395,10 @@ export function PlaybackTheater({
     setControlDock(settings.controlBarPosition === "bottom" ? "bottom" : "top");
     setAttemptedProviders(new Set());
     setIframeFailed(false);
-    setPopupSuspected(false);
     setPlaybackConsentReady(false);
     setShowAgeGate(false);
     setShowRiskConsent(false);
     setControlsVisible(true);
-    activatedAtRef.current = null;
     setWatchHistory(getWatchHistory());
   }, [open, settings.controlBarPosition, settings.defaultProvider, settings.theaterModeDefault]);
 
@@ -457,8 +451,6 @@ export function PlaybackTheater({
   useEffect(() => {
     setControlsUnlocked(false);
     setIframeFailed(false);
-    setPopupSuspected(false);
-    activatedAtRef.current = null;
   }, [mediaId, mediaType, selectedEpisode, selectedProvider, selectedSeason]);
 
   useEffect(() => {
@@ -505,42 +497,6 @@ export function PlaybackTheater({
     }
     progressLoadedRef.current = true;
   }, [mediaType, open, progressQuery.data, settings.rememberLastEpisode]);
-
-  const markPopupSuspected = () => {
-    const activatedAt = activatedAtRef.current;
-    if (!activeCandidate || !activatedAt || Date.now() - activatedAt > POPUP_MONITOR_WINDOW_MS) {
-      return;
-    }
-
-    bumpProviderStat(PROVIDER_REPORTS_KEY, activeCandidate.providerId, "reports");
-    bumpProviderStat(PROVIDER_FAILURES_KEY, activeCandidate.providerId, "failures");
-    setPopupSuspected(true);
-    setIframeFailed(true);
-    setControlsVisible(true);
-    setControlDock("top");
-    activatedAtRef.current = null;
-    toast.warning("This server may have opened another window. You can switch servers or report it.");
-  };
-
-  useEffect(() => {
-    if (!open || !controlsUnlocked) {
-      return;
-    }
-
-    const onBlur = () => markPopupSuspected();
-    const onVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        markPopupSuspected();
-      }
-    };
-
-    window.addEventListener("blur", onBlur);
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => {
-      window.removeEventListener("blur", onBlur);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-    };
-  }, [activeCandidate?.providerId, controlsUnlocked, open]);
 
   useEffect(() => {
     if (!open) {
@@ -636,7 +592,6 @@ export function PlaybackTheater({
     setManualProvider(manual);
     setControlsUnlocked(false);
     setIframeFailed(false);
-    setPopupSuspected(false);
     setServerSheetOpen(false);
     savePreferredProvider(providerId);
   };
@@ -1075,22 +1030,16 @@ export function PlaybackTheater({
                   ) : null}
                 </div>
               </div>
-            ) : activeCandidate.status !== "ready" || iframeFailed || popupSuspected ? (
+            ) : activeCandidate.status !== "ready" || iframeFailed ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-8 text-center text-red-100">
                 <span className="rounded-[1.2rem] border border-red-300/20 bg-red-400/10 p-4">
                   <ShieldAlert className="size-7" />
                 </span>
                 <span className="max-w-xl text-lg font-semibold text-white">
-                  {popupSuspected
-                    ? "This server may have opened another window."
-                    : activeCandidate.status === "blocked"
-                      ? "This server is turned off."
-                      : "This server may be unsafe or broken."}
+                  {activeCandidate.status === "blocked" ? "This server is turned off." : "This server may be unsafe or broken."}
                 </span>
                 <span className="max-w-xl text-sm leading-6 text-[var(--muted)]">
-                  {popupSuspected
-                    ? "Try a different server or report the provider. GrubX does not control third-party provider ads."
-                    : activeCandidate.reason ?? "Switch servers or report the issue so this provider can be reviewed."}
+                  {activeCandidate.reason ?? "Switch servers or report the issue so this provider can be reviewed."}
                 </span>
                 <div className="flex flex-wrap justify-center gap-2">
                   <button
@@ -1113,7 +1062,6 @@ export function PlaybackTheater({
                     <button
                       type="button"
                       onClick={() => {
-                        setReportReason("popups");
                         setReportOpen(true);
                       }}
                       className="rounded-full border border-white/12 bg-white/8 px-5 py-2.5 text-sm font-semibold text-white transition hover:border-white/22"
@@ -1129,8 +1077,8 @@ export function PlaybackTheater({
                 src={activeCandidate.embedUrl}
                 title={`${title} player`}
                 className={cn("absolute inset-0 h-full w-full border-0", settings.blockPopups && !controlsUnlocked ? "pointer-events-none" : "")}
-                allow="fullscreen; picture-in-picture; encrypted-media; autoplay; clipboard-write; web-share; presentation"
-                referrerPolicy="no-referrer"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
                 onLoad={() => {
                   markActiveProviderSuccess();
@@ -1145,7 +1093,6 @@ export function PlaybackTheater({
                 onClick={() => {
                   setControlsUnlocked(true);
                   setControlsVisible(false);
-                  activatedAtRef.current = Date.now();
                 }}
                 className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-black/72 px-6 text-center backdrop-blur-sm transition"
               >
