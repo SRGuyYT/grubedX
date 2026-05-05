@@ -816,6 +816,9 @@ export function SettingsPanel() {
           <SettingRow title="Nav item order" description="Comma-separated route keys. Settings can never be fully hidden.">
             <TextInputControl value={settings.navItemOrder.join(", ")} onChange={(value) => setSetting("navItemOrder", value.split(",").map((item) => item.trim()).filter(Boolean), "Nav order updated.")} />
           </SettingRow>
+          <SettingRow title="Anime URL" description="External site used when opening the Anime route.">
+            <TextInputControl type="url" value={settings.animeUrl} onChange={(value) => setSetting("animeUrl", value, "Anime URL updated.")} label="Anime URL" />
+          </SettingRow>
           <SettingRow title="Open AI Server" description="Choose whether AI opens in GrubX or a new tab.">
             <SelectSetting
               value={settings.aiOpenMode}

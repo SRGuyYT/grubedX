@@ -90,6 +90,7 @@ export type Settings = {
   footerText: string;
   aiServerLabel: string;
   aiServerUrl: string;
+  animeUrl: string;
   themePreference: ThemePreference;
   accentColor: string;
   backgroundStyle: BackgroundStyle;
