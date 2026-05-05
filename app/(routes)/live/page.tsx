@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, LoaderCircle, Radio, ShieldAlert, Signal, Tv2, X } from "lucide-react";
+import { CalendarDays, LoaderCircle, ShieldAlert, X } from "lucide-react";
 
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { FeatureGate } from "@/components/feedback/FeatureGate";
@@ -187,36 +187,6 @@ export default function LiveTVPage() {
   return (
     <FeatureGate feature="live">
       <div className="pb-14 md:pb-16">
-      <section className="relative overflow-hidden border-b border-white/8">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#060912] via-[#060912f2] to-[#06091238]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#060912] via-[#06091299] to-[#06091280]" />
-
-        <div className="page-shell relative z-10 py-12 md:py-14">
-          <div className="liquid-glass rounded-[2.2rem] px-6 py-8 md:px-8 md:py-9">
-            <p className="text-xs font-semibold uppercase tracking-[0.34em] text-[var(--accent)]">Live Sports</p>
-            <h1 className="mt-4 text-5xl font-bold leading-none sm:text-6xl md:text-7xl">Matchday Control Room</h1>
-            <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
-              Jump into live events, scan the schedule, and choose the stream that feels best on your screen.
-            </p>
-
-            <div className="mt-7 flex flex-wrap items-center gap-3 text-sm text-[var(--muted)]">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-2">
-                <Radio className="size-4 text-[var(--accent)]" />
-                {scope === "live" ? "Realtime matches" : "Today's schedule"}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-2">
-                <Signal className="size-4 text-[var(--accent)]" />
-                Stream choices
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3 py-2">
-                <Tv2 className="size-4 text-[var(--accent)]" />
-                Click to watch
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="page-shell space-y-6 py-8 md:space-y-7 md:py-12 xl:py-14">
         <div className="liquid-glass rounded-[2.1rem] px-5 py-5 md:px-6 md:py-6">
           <div className="flex flex-wrap gap-2.5 md:gap-3">

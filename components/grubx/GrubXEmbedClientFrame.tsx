@@ -60,9 +60,9 @@ export function GrubXEmbedClientFrame({
       src={source}
       title={title}
       className="h-full w-full"
-      allow="fullscreen; picture-in-picture; encrypted-media"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       allowFullScreen
-      referrerPolicy="no-referrer"
+      referrerPolicy="strict-origin-when-cross-origin"
       style={{ border: 0, width: "100vw", height: "100dvh", display: "block", background: "#000" }}
     />
   );

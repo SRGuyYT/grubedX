@@ -785,9 +785,10 @@ export function SettingsPanel() {
             <SelectSetting
               value={settings.navStyle}
               options={[
-                { value: "floating", label: "Floating" },
-                { value: "top-bar", label: "Top bar" },
-                { value: "sidebar", label: "Sidebar" },
+                { value: "auto", label: "Auto" },
+                { value: "top-bar", label: "Top bar only" },
+                { value: "sidebar", label: "Sidebar only" },
+                                { value: "floating", label: "Floating" },
                 { value: "bottom-mobile", label: "Bottom mobile bar" },
                 { value: "compact", label: "Compact" },
               ]}
@@ -798,8 +799,9 @@ export function SettingsPanel() {
             <SelectSetting
               value={settings.mobileNavStyle}
               options={[
-                { value: "bottom-bar", label: "Bottom bar" },
+                { value: "auto", label: "Auto" },
                 { value: "drawer", label: "Drawer" },
+                                { value: "bottom-bar", label: "Bottom bar" },
                 { value: "compact-top", label: "Compact top" },
               ]}
               onChange={(value) => setSetting("mobileNavStyle", value, "Mobile nav style updated.")}
