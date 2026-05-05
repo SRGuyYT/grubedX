@@ -963,12 +963,6 @@ export function PlaybackTheater({
           </button>
         ) : null}
 
-        <div className="pointer-events-none absolute inset-x-3 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-20 sm:hidden">
-          <div className="rounded-[1rem] border border-white/12 bg-black/74 px-4 py-3 text-center text-xs font-semibold leading-5 text-white shadow-2xl backdrop-blur-xl">
-            GrubX is not fully compatible with phones. Please move to a bigger screen if possible.
-          </div>
-        </div>
-
         <div className="absolute inset-0 bg-black">
             {!settings.featureToggles.thirdPartyPlayback ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-8 text-center text-white">
@@ -1251,33 +1245,6 @@ export function PlaybackTheater({
               </form>
             ) : null}
         </div>
-
-          {settings.showPlaybackTips ? (
-            <div className="keyboard-only absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-4 z-10 rounded-2xl border border-white/10 bg-black/60 px-4 py-3 text-xs text-[var(--muted)]">
-              Press Esc to close. Playback stays inside this theater view.
-            </div>
-          ) : null}
-
-          {activeCandidate ? (
-            <div className="absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-10 rounded-2xl border border-white/10 bg-black/60 px-4 py-3 text-xs text-[var(--muted)]">
-              {activeCandidate.providerName}
-              {manualProvider ? "" : " auto-selected"}
-              {activeCandidate.latencyMs ? ` - ${activeCandidate.latencyMs}ms` : ""} from {candidates.length} server
-              {candidates.length === 1 ? "" : "s"}.
-            </div>
-          ) : null}
-
-          {watchHistory.length > 0 ? (
-            <div className="absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-4 z-10 hidden max-w-[320px] rounded-2xl border border-white/10 bg-black/60 px-4 py-3 text-xs text-[var(--muted)] xl:block">
-              <p className="mb-2 text-[10px] uppercase tracking-[0.24em] text-white/70">Watch history</p>
-              {watchHistory.slice(0, 3).map((item) => (
-                <div key={`${item.id}-${item.updatedAt}`} className="flex justify-between gap-3 py-1">
-                  <span className="truncate">{item.title ?? item.id}</span>
-                  <span>{item.progress}%</span>
-                </div>
-              ))}
-            </div>
-          ) : null}
 
           {detailsQuery.isError ? (
             <div className="absolute right-4 top-4 z-10 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
