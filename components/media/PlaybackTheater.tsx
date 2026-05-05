@@ -1129,8 +1129,8 @@ export function PlaybackTheater({
                 src={activeCandidate.embedUrl}
                 title={`${title} player`}
                 className={cn("absolute inset-0 h-full w-full border-0", settings.blockPopups && !controlsUnlocked ? "pointer-events-none" : "")}
-                allow="fullscreen; picture-in-picture; encrypted-media; autoplay; clipboard-write; web-share; presentation"
-                referrerPolicy="no-referrer"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
                 onLoad={() => {
                   markActiveProviderSuccess();
