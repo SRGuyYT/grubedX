@@ -7,7 +7,7 @@ export function ExternalEmbedFrame({
   title,
   className,
   allow,
-  referrerPolicy = "no-referrer",
+  referrerPolicy = "strict-origin-when-cross-origin",
   onLoad,
   onError,
 }: {
@@ -24,7 +24,7 @@ export function ExternalEmbedFrame({
       src={src}
       title={title}
       className={className ?? "h-full w-full"}
-      allow={allow ?? "fullscreen; picture-in-picture; encrypted-media; autoplay; clipboard-write; web-share; presentation"}
+      allow={allow ?? "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"}
       allowFullScreen
       referrerPolicy={referrerPolicy}
       onLoad={onLoad}
